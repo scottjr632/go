@@ -6,7 +6,8 @@ import (
 	"net/http"
 )
 
-func writeJSON(w http.ResponseWriter, model interface{}) error {
+// WriteJSON returns a application/json response of the model
+func WriteJSON(w http.ResponseWriter, model interface{}) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("X-Content-Type-Options", "nosniff")
 	jsonModel, err := json.Marshal(model)
@@ -21,7 +22,8 @@ func writeJSON(w http.ResponseWriter, model interface{}) error {
 	return nil
 }
 
-func readJSON(r *http.Request, model interface{}) error {
+// ReadJSON de-serializes a JSON request into a model
+func ReadJSON(r *http.Request, model interface{}) error {
 	bod, err := ioutil.ReadAll(r.Body)
 	defer r.Body.Close()
 	if err != nil {
@@ -32,7 +34,9 @@ func readJSON(r *http.Request, model interface{}) error {
 	return err
 }
 
-func writeError(w http.ResponseWriter, err error, code int) {
+// WriteError takes an error and returns a JSON response with the
+// error string as the message
+func WriteError(w http.ResponseWriter, err error, code int) {
 	w.WriteHeader(code)
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("X-Content-Type-Options", "nosniff")
@@ -43,5 +47,5 @@ func writeError(w http.ResponseWriter, err error, code int) {
 	}{}
 
 	errJSON.Error.Message = err.Error()
-	writeJSON(w, errJSON)
+	WriteJSON(w, errJSON)
 }
