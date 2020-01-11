@@ -1,6 +1,7 @@
 package helpers
 
 import (
+    "regexp"
 	"encoding/json"
 	"io/ioutil"
 	"net/http"
@@ -48,4 +49,19 @@ func WriteError(w http.ResponseWriter, err error, code int) {
 
 	errJSON.Error.Message = err.Error()
 	WriteJSON(w, errJSON)
+}
+
+func BuildGetParams(regEx string) func(string) (paramsMap map[string]string) {
+	var compRegEx = regexp.MustCompile(regEx)
+	return func(url string) (paramsMap map[string]string) {
+		match := compRegEx.FindStringSubmatch(url)
+
+		paramsMap = make(map[string]string)
+		for i, name := range compRegEx.SubexpNames() {
+			if i > 0 && i <= len(match) {
+				paramsMap[name] = match[i]
+			}
+		}
+		return
+	}
 }
